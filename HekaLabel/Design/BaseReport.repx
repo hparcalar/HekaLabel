@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="20.1.3.0" Ref="1" ControlType="HekaLabel.Design.HekaReport, HekaLabel, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Name="HekaReport" SnapGridSize="25" ReportUnit="TenthsOfAMillimeter" Margins="0, 0, 0, 0" PaperKind="Custom" PageWidth="400" PageHeight="200" Version="20.1" DataSource="#Ref-0" Dpi="254">
+  <Bands>
+    <Item1 Ref="2" ControlType="DetailBand" Name="Detail" HeightF="200" TextAlignment="TopLeft" Dpi="254" Padding="0,0,0,0,254">
+      <HierarchyPrintOptions Ref="3" Indent="50.8" />
+    </Item1>
+    <Item2 Ref="4" ControlType="TopMarginBand" Name="TopMargin" HeightF="0" TextAlignment="TopLeft" Dpi="254" Padding="0,0,0,0,254" />
+    <Item3 Ref="5" ControlType="BottomMarginBand" Name="BottomMargin" HeightF="0" TextAlignment="TopLeft" Dpi="254" Padding="0,0,0,0,254" />
+  </Bands>
+  <ObjectStorage>
+    <Item1 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v20.1" Ref="0" Content="~Xtra#NULL" Type="System.Collections.Generic.List`1[[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]" />
+  </ObjectStorage>
+</XtraReportsLayoutSerializer>
