@@ -76,7 +76,7 @@ namespace HekaLabel
         {
             if (_editingCategory == null)
             {
-                txtCategoryFirmNo.Text = "78";
+                txtCategoryFirmNo.Text = "97";
                 txtModelNo.Text = "";
                 txtCategoryDeviceNo.Text = "MN";
                 txtCategoryRevisionNo.Text = "";
@@ -84,7 +84,7 @@ namespace HekaLabel
             }
             else
             {
-                txtCategoryFirmNo.Text = !string.IsNullOrEmpty(_editingCategory.FirmNo) ? _editingCategory.FirmNo : "78";
+                txtCategoryFirmNo.Text = !string.IsNullOrEmpty(_editingCategory.FirmNo) ? _editingCategory.FirmNo : "97";
                 txtModelNo.Text = _editingCategory.ModelNo;
                 txtCategoryDeviceNo.Text = _editingCategory.DeviceNo;
                 txtCategoryRevisionNo.Text = _editingCategory.RevisionNo;
