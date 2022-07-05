@@ -80,6 +80,7 @@ namespace HekaLabel
                 txtModelNo.Text = "";
                 txtCategoryDeviceNo.Text = "MN";
                 txtCategoryRevisionNo.Text = "";
+                txtCategorySpecialCode.Text = "";
             }
             else
             {
@@ -87,6 +88,7 @@ namespace HekaLabel
                 txtModelNo.Text = _editingCategory.ModelNo;
                 txtCategoryDeviceNo.Text = _editingCategory.DeviceNo;
                 txtCategoryRevisionNo.Text = _editingCategory.RevisionNo;
+                txtCategorySpecialCode.Text = _editingCategory.SpecialCode;
             }
         }
 
@@ -229,6 +231,7 @@ namespace HekaLabel
                     txtPrintRevision.Text = printingCategory.RevisionNo;
                     txtPrintTestDevice.Text = printingCategory.DeviceNo;
                     cmbPrinters.Text = printingCategory.LastPrinterName;
+                    txtPrintingSpecialCode.Text = printingCategory.SpecialCode;
                 }
             }
         }
