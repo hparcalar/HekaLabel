@@ -78,7 +78,7 @@ namespace HekaLabel
             {
                 txtCategoryFirmNo.Text = "97";
                 txtModelNo.Text = "";
-                txtCategoryDeviceNo.Text = "MN";
+                txtCategoryDeviceNo.Text = "OT";
                 txtCategoryRevisionNo.Text = "";
                 txtCategorySpecialCode.Text = "";
             }
@@ -277,9 +277,9 @@ namespace HekaLabel
                     return;
                 }
 
-                if (testVal > 30 || testVal < 0)
+                if (testVal > 1 || testVal < 0)
                 {
-                    MessageBox.Show("Maksimum 30 adet etiket yazdırılabilir.");
+                    MessageBox.Show("Maksimum 1 adet etiket yazdırılabilir.");
                     return;
                 }
 
