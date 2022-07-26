@@ -78,7 +78,7 @@ namespace HekaLabel
             {
                 txtCategoryFirmNo.Text = "97";
                 txtModelNo.Text = "";
-                txtCategoryDeviceNo.Text = "OT";
+                txtCategoryDeviceNo.Text = "MN";
                 txtCategoryRevisionNo.Text = "";
                 txtCategorySpecialCode.Text = "";
             }
@@ -167,7 +167,12 @@ namespace HekaLabel
                 string standartRaporTanimi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_1.repx";
                 string raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + _editingCategory.Id.ToString() + ".repx";
                 if (!File.Exists(raporDosyaAdi))
-                    File.Copy(standartRaporTanimi, raporDosyaAdi);
+                    File.Copy(standartRaporTanimi, raporDosyaAdi, true);
+
+                string standartRaporTanimi2 = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_1_2.repx";
+                string raporDosyaAdi2 = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + _editingCategory.Id.ToString() + "_2.repx";
+                if (!File.Exists(raporDosyaAdi2))
+                    File.Copy(standartRaporTanimi2, raporDosyaAdi2, true);
             }
 
             BindCategoryList();
@@ -277,9 +282,9 @@ namespace HekaLabel
                     return;
                 }
 
-                if (testVal > 1 || testVal < 0)
+                if (testVal > 100)//((testVal > 1 && cmbLabelType.SelectedIndex != 1) || (testVal > 2 && cmbLabelType.SelectedIndex == 1) || testVal < 0)
                 {
-                    MessageBox.Show("Maksimum 1 adet etiket yazdırılabilir.");
+                    MessageBox.Show("Maksimum 100 adet etiket yazdırılabilir.");
                     return;
                 }
 
@@ -294,6 +299,9 @@ namespace HekaLabel
                         int serialCount = Convert.ToInt32(txtPrintSerialCount.Text);
 
                         string raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + printingCategory.Id.ToString() + ".repx";
+                        if (cmbLabelType.SelectedIndex == 1)
+                            raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + printingCategory.Id.ToString() + "_2.repx";
+
                         HekaReport rpr = new HekaReport();
 
                         int currentSerialNo = 0;
@@ -323,33 +331,84 @@ namespace HekaLabel
                         if (currentSerialNo == 0)
                             currentSerialNo++;
 
+                        // tek satırda çift etiket çıkan tasarımda toplam sayıyı 2 ye böl
+                        if (cmbLabelType.SelectedIndex == 1)
+                        {
+                            serialCount = serialCount / 2;
+                        }
+
                         for (int i = 0; i < serialCount; i++)
                         {
-                            rpr.Yazdir<LabelModel>(raporDosyaAdi, new List<LabelModel>() {
-                                new LabelModel
-                                {
-                                    ModelNo = printingCategory.ModelNo,
-                                    ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
-                                    Revision = txtPrintRevision.Text,
-                                    SerialNo = string.Format("{0:0000}", currentSerialNo),
-                                    TestDevice = printingCategory.DeviceNo,
-                                    Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
-                                        + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
-                                        + (
-                                            string.Format("{0:0000}", currentSerialNo)
-                                          ) + printingCategory.DeviceNo
-                                        + txtPrintingSpecialCode.Text
-                                },
-                            }, cmbPrinters.Text);
-
-                            var newHistory = new Business.Context.PrintHistory
+                            if (cmbLabelType.SelectedIndex == 1)
                             {
-                                CategoryId = printingCategory.Id,
-                                PrintDate = DateTime.Now,
-                            };
-                            db.PrintHistory.Add(newHistory);
+                                rpr.Yazdir<LabelModel>(raporDosyaAdi, new List<LabelModel>() {
+                                    new LabelModel
+                                    {
+                                        ModelNo = printingCategory.ModelNo,
+                                        ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
+                                        Revision = txtPrintRevision.Text,
+                                        SerialNo = string.Format("{0:0000}", currentSerialNo),
+                                        TestDevice = printingCategory.DeviceNo,
+                                        Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
+                                            + (
+                                                string.Format("{0:0000}", currentSerialNo)
+                                              ) + printingCategory.DeviceNo
+                                            + txtPrintingSpecialCode.Text,
+                                        SerialNo2 = string.Format("{0:0000}", currentSerialNo + 1),
+                                        ProductionDate2 = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
+                                        Barcode2 = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
+                                            + (
+                                                string.Format("{0:0000}", currentSerialNo + 1)
+                                              ) + printingCategory.DeviceNo
+                                            + txtPrintingSpecialCode.Text,
+                                    },
+                                }, cmbPrinters.Text);
 
-                            currentSerialNo++;
+                                var newHistory = new Business.Context.PrintHistory
+                                {
+                                    CategoryId = printingCategory.Id,
+                                    PrintDate = DateTime.Now,
+                                };
+                                var newHistory2 = new Business.Context.PrintHistory
+                                {
+                                    CategoryId = printingCategory.Id,
+                                    PrintDate = DateTime.Now,
+                                };
+                                db.PrintHistory.Add(newHistory);
+                                db.PrintHistory.Add(newHistory2);
+
+                                currentSerialNo += 2;
+                            }
+                            else
+                            {
+                                rpr.Yazdir<LabelModel>(raporDosyaAdi, new List<LabelModel>() {
+                                    new LabelModel
+                                    {
+                                        ModelNo = printingCategory.ModelNo,
+                                        ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
+                                        Revision = txtPrintRevision.Text,
+                                        SerialNo = string.Format("{0:0000}", currentSerialNo),
+                                        TestDevice = printingCategory.DeviceNo,
+                                        Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
+                                            + (
+                                                string.Format("{0:0000}", currentSerialNo)
+                                              ) + printingCategory.DeviceNo
+                                            + txtPrintingSpecialCode.Text
+                                    },
+                                }, cmbPrinters.Text);
+
+                                var newHistory = new Business.Context.PrintHistory
+                                {
+                                    CategoryId = printingCategory.Id,
+                                    PrintDate = DateTime.Now,
+                                };
+                                db.PrintHistory.Add(newHistory);
+
+                                currentSerialNo++;
+                            }
                         }
 
                         printingCategory.LastPrinterName = cmbPrinters.Text;
@@ -409,6 +468,46 @@ namespace HekaLabel
             catch (Exception)
             {
 
+            }
+        }
+
+        private void btnDesign2_Click(object sender, RoutedEventArgs e)
+        {
+            if (_editingCategory.Id <= 0)
+            {
+                SaveCategory();
+            }
+
+            string standartRaporTanimi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_1.repx";
+            string raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + _editingCategory.Id.ToString() + "_2.repx";
+            if (!File.Exists(raporDosyaAdi))
+                File.Copy(standartRaporTanimi, raporDosyaAdi);
+
+            HekaReport rpr = new HekaReport();
+            rpr.Dizayn<LabelModel>(raporDosyaAdi, new List<LabelModel>() { new LabelModel { } });
+        }
+
+        private void btnCopyDesignForAllModels_Click(object sender, RoutedEventArgs e)
+        {
+            if (_editingCategory != null && _editingCategory.Id > 0)
+            {
+                string design1 = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_"+ _editingCategory.Id +".repx";
+                string design2 = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_"+ _editingCategory.Id +"_2.repx";
+
+                using (LabelContext db = new LabelContext())
+                {
+                    var otherModels = db.Category.Where(d => d.Id != _editingCategory.Id).ToArray();
+                    foreach (var item in otherModels)
+                    {
+                        if (File.Exists(design1))
+                            File.Copy(design1, System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + item.Id + ".repx", true);
+
+                        if (File.Exists(design2))
+                            File.Copy(design2, System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + item.Id + "_2.repx", true);
+                    }
+                }
+
+                MessageBox.Show("Bu tasarım tüm modeller için başarıyla uygulandı.", "Bilgilendirme");
             }
         }
     }

@@ -36,7 +36,7 @@
                         </LinearGradientBrush>
                     </Button.Background>
                 </Button>
-                <Button Content="Tasarım" x:Name="btnDesign" Height="30" Width="100" Margin="392,284,292.8,45.2" Click="btnDesign_Click" FontWeight="Bold">
+                <Button Content="Tasarım" x:Name="btnDesign" Height="30" Width="100" Margin="278,284,406.8,45.2" Click="btnDesign_Click" FontWeight="Bold">
                     <Button.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                             <GradientStop Color="#FFCDEDD9" Offset="0"/>
@@ -48,12 +48,28 @@
                 <Label Content="Revizyon No"  Margin="278,107,357.8,228.2" />
                 <TextBox x:Name="txtCategoryRevisionNo" Height="23" TextWrapping="Wrap" Margin="278,136,292.8,200.2"/>
                 <Label Content="Cihaz No"  Margin="278,165,357.8,170.2" />
-                <TextBox x:Name="txtCategoryDeviceNo" Height="23" TextWrapping="Wrap" Margin="278,194,292.8,142.2" Text="OT"/>
+                <TextBox x:Name="txtCategoryDeviceNo" Height="23" TextWrapping="Wrap" Margin="278,194,292.8,142.2" Text="MN"/>
                 <Label Content="Firma No"  Margin="515,51,120.8,284.2" />
                 <TextBox x:Name="txtCategoryFirmNo" Height="23" TextWrapping="Wrap" Margin="515,80,55.8,256.2" Text="97"/>
                 <Label Content="Özel Alan"  Margin="515,107,120.8,228.2" />
                 <TextBox x:Name="txtCategorySpecialCode" Height="23" TextWrapping="Wrap" Margin="515,136,55.8,200.2"/>
                 <Button Content="Rev Log" x:Name="btnExportChangeLogs" Height="30" Margin="10,10,713.8,319.2" Click="btnExportChangeLogs_Click" FontWeight="Bold">
+                    <Button.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFBCC6E7" Offset="0"/>
+                            <GradientStop Color="#FF5266A8" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+                <Button Content="Tasarım 2" x:Name="btnDesign2" Height="30" Width="100" Margin="392,284,292.8,45.2" Click="btnDesign2_Click" FontWeight="Bold">
+                    <Button.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFCDEDD9" Offset="0"/>
+                            <GradientStop Color="#FF38E515" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+                <Button Content="Tüm Modeller İçin Kopyala" x:Name="btnCopyDesignForAllModels" Height="30" Margin="515,284,55.8,45.2" Click="btnCopyDesignForAllModels_Click" FontWeight="Bold">
                     <Button.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                             <GradientStop Color="#FFBCC6E7" Offset="0"/>
@@ -96,6 +112,12 @@
                 <TextBox x:Name="txtPrintingSpecialCode" TextWrapping="Wrap" Margin="292,267,255,69.2"/>
                 <ComboBox HorizontalAlignment="Left" Name="cmbPrinters" Margin="552,306,0,0" VerticalAlignment="Top" Width="227" Height="43"/>
                 <Label Content="Yazıcı Seçimi" Margin="552,265,10,69.2"/>
+                <ComboBox HorizontalAlignment="Left" x:Name="cmbLabelType" SelectedIndex="0" Margin="552,195,0,0" VerticalAlignment="Top" Width="227" Height="40">
+                    <ComboBoxItem Content="Etiket 1"></ComboBoxItem>
+                    <ComboBoxItem Content="Etiket 2"></ComboBoxItem>
+                </ComboBox>
+                <Label Content="Etiket Seçimi
+                       " Margin="552,154,10,180.2"/>
             </Grid>
         </TabItem>
     </TabControl>
