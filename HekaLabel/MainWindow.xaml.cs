@@ -18,6 +18,8 @@ using System.Windows.Shapes;
 using HekaLabel.Business.Context;
 using HekaLabel.Design;
 using System.IO;
+using HekaLabel.Runners;
+using System.Timers;
 
 namespace HekaLabel
 {
@@ -45,6 +47,8 @@ namespace HekaLabel
         }
 
         private Category _editingCategory;
+        private SensorListener _sensorListener = new SensorListener();
+        private Timer _tmrTriggerStatusDisabler = new Timer();
 
         private void BindCategoryList()
         {
@@ -245,25 +249,58 @@ namespace HekaLabel
         {
             BindCategoryList();
             BindPrinters();
+            BindTriggerPath();
+
+            _tmrTriggerStatusDisabler.Elapsed += _tmrTriggerStatusDisabler_Elapsed;
+            _tmrTriggerStatusDisabler.Interval = 1200;
+
+            _sensorListener.OnPrintOrderArrived += _sensorListener_OnPrintOrderArrived;
+            _sensorListener.Run();
         }
 
-        private void btnDesign_Click(object sender, RoutedEventArgs e)
+        private void _sensorListener_OnPrintOrderArrived()
         {
-            if (_editingCategory.Id <= 0)
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
-                SaveCategory();
-            }
+                btnTriggerStatus.Background = Brushes.Green;
+                PrintLabel();
 
-            string standartRaporTanimi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_1.repx";
-            string raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + _editingCategory.Id.ToString() + ".repx";
-            if (!File.Exists(raporDosyaAdi))
-                File.Copy(standartRaporTanimi, raporDosyaAdi);
-
-            HekaReport rpr = new HekaReport();
-            rpr.Dizayn<LabelModel>(raporDosyaAdi, new List<LabelModel>() { new LabelModel { } });
+                
+                _tmrTriggerStatusDisabler.Enabled = true;
+                _tmrTriggerStatusDisabler.Start();
+            });
         }
 
-        private void btnPrint_Click(object sender, RoutedEventArgs e)
+        private void _tmrTriggerStatusDisabler_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                btnTriggerStatus.Background = Brushes.White;
+                _tmrTriggerStatusDisabler.Stop();
+            });
+        }
+
+        private void BindTriggerPath()
+        {
+            try
+            {
+                using (LabelContext db = new LabelContext())
+                {
+                    var dbStg = db.AppSetting.FirstOrDefault(d => d.AppKey == "SensorTriggerPath");
+                    if (dbStg != null)
+                    {
+                        txtSensorTriggerFilePath.Text = dbStg.AppVal;
+                        _sensorListener.TriggerPath = dbStg.AppVal;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void PrintLabel()
         {
             if (lstPrintCategory.SelectedValue != null)
             {
@@ -292,7 +329,7 @@ namespace HekaLabel
                 {
                     int currentId = Convert.ToInt32(lstPrintCategory.SelectedValue);
                     var printingCategory = db.Category.FirstOrDefault(d => d.Id == currentId);
-                    
+
                     if (printingCategory != null)
                     {
                         int startSerialNo = printingCategory.SerialNo;
@@ -416,6 +453,27 @@ namespace HekaLabel
                     }
                 }
             }
+
+        }
+        private void btnDesign_Click(object sender, RoutedEventArgs e)
+        {
+            if (_editingCategory.Id <= 0)
+            {
+                SaveCategory();
+            }
+
+            string standartRaporTanimi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_1.repx";
+            string raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + _editingCategory.Id.ToString() + ".repx";
+            if (!File.Exists(raporDosyaAdi))
+                File.Copy(standartRaporTanimi, raporDosyaAdi);
+
+            HekaReport rpr = new HekaReport();
+            rpr.Dizayn<LabelModel>(raporDosyaAdi, new List<LabelModel>() { new LabelModel { } });
+        }
+
+        private void btnPrint_Click(object sender, RoutedEventArgs e)
+        {
+            PrintLabel();
         }
 
         private void txtPrintFirmNo_TextChanged(object sender, TextChangedEventArgs e)
@@ -508,6 +566,55 @@ namespace HekaLabel
                 }
 
                 MessageBox.Show("Bu tasarım tüm modeller için başarıyla uygulandı.", "Bilgilendirme");
+            }
+        }
+
+        private void btnSelectSensorTriggerFile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
+                Nullable<bool> result = openFileDlg.ShowDialog();
+                if (result == true)
+                {
+                    txtSensorTriggerFilePath.Text = openFileDlg.FileName;
+
+                    using (LabelContext db = new LabelContext())
+                    {
+                        var dbStg = db.AppSetting.FirstOrDefault(d => d.AppKey == "SensorTriggerPath");
+                        if (dbStg == null)
+                        {
+                            dbStg = new AppSetting
+                            {
+                                AppKey = "SensorTriggerPath",
+                                AppVal = "",
+                            };
+                            db.AppSetting.Add(dbStg);
+                        }
+
+                        dbStg.AppVal = txtSensorTriggerFilePath.Text;
+                        _sensorListener.TriggerPath = txtSensorTriggerFilePath.Text;
+
+                        db.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                _sensorListener.Stop();
+                _sensorListener.Dispose();
+            }
+            catch (Exception)
+            {
+
             }
         }
     }

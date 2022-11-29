@@ -24,5 +24,6 @@ namespace HekaLabel.Business.Context
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<PrintHistory> PrintHistory { get; set; }
         public virtual DbSet<RevisionChangeLog> RevisionChangeLog { get; set; }
+        public virtual DbSet<AppSetting> AppSetting { get; set; }
     }
 }

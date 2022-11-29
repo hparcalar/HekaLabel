@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HekaLabel"
         mc:Ignorable="d"
-        Title="Heka Label" Height="450" Width="800" Icon="favicon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="#FF326295">
+        Title="Heka Label" Height="450" Width="800" Icon="favicon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF326295">
     <TabControl HorizontalAlignment="Left" Height="416" SelectedIndex="1" VerticalAlignment="Top" Width="790">
         <TabItem HorizontalAlignment="Left" Width="200" Height="50">
             <TabItem.Header>
@@ -97,7 +97,7 @@
                 <TextBox x:Name="txtPrintTestDevice" TextWrapping="Wrap" IsEnabled="False" Margin="292,154,255,182.2" FontSize="10"/>
 
                 <Label Content="Seri Adedi" Margin="292,182,382,152.2" FontSize="9"/>
-                <TextBox x:Name="txtPrintSerialCount" TextWrapping="Wrap" Margin="291,212,382,124.2" FontSize="10"/>
+                <TextBox x:Name="txtPrintSerialCount" TextWrapping="Wrap" Margin="291,212,382,124.2" Text="1" IsEnabled="False" FontSize="10"/>
                 <Label Content="Firma No" Margin="415,182,259,152.2" FontSize="9"/>
                 <TextBox x:Name="txtPrintFirmNo" TextWrapping="Wrap" IsEnabled="False" Margin="415,212,258,124.2" TextChanged="txtPrintFirmNo_TextChanged" FontSize="10"/>
                 <Button Content="Yazdır" x:Name="btnPrint" Margin="290,306,258,10.2" Click="btnPrint_Click" FontWeight="Bold">
@@ -118,6 +118,10 @@
                 </ComboBox>
                 <Label Content="Etiket Seçimi
                        " Margin="552,154,10,180.2" FontSize="9"/>
+                <TextBox x:Name="txtSensorTriggerFilePath" TextWrapping="Wrap" IsEnabled="False" Margin="552,38,61,298.2" FontSize="10"/>
+                <Label Content="Sensör Tetik Dosyası" Margin="552,13,9,321.2" FontSize="9"/>
+                <Button Content="..." Name="btnSelectSensorTriggerFile" Click="btnSelectSensorTriggerFile_Click" HorizontalAlignment="Left" Margin="728,38,0,0" VerticalAlignment="Top" Width="47" Height="23"/>
+                <Button Content="Yazdırma Tetiği Durumu" Name="btnTriggerStatus" FontSize="9" Background="White" HorizontalAlignment="Left" Margin="552,66,0,0" VerticalAlignment="Top" Width="176" Height="25"/>
             </Grid>
         </TabItem>
     </TabControl>
