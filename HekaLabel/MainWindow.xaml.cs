@@ -76,15 +76,15 @@ namespace HekaLabel
         {
             if (_editingCategory == null)
             {
-                txtCategoryFirmNo.Text = "97";
+                txtCategoryFirmNo.Text = "";
                 txtModelNo.Text = "";
-                txtCategoryDeviceNo.Text = "MN";
+                txtCategoryDeviceNo.Text = "MT";
                 txtCategoryRevisionNo.Text = "";
                 txtCategorySpecialCode.Text = "";
             }
             else
             {
-                txtCategoryFirmNo.Text = !string.IsNullOrEmpty(_editingCategory.FirmNo) ? _editingCategory.FirmNo : "97";
+                txtCategoryFirmNo.Text = !string.IsNullOrEmpty(_editingCategory.FirmNo) ? _editingCategory.FirmNo : "";
                 txtModelNo.Text = _editingCategory.ModelNo;
                 txtCategoryDeviceNo.Text = _editingCategory.DeviceNo;
                 txtCategoryRevisionNo.Text = _editingCategory.RevisionNo;
@@ -282,11 +282,11 @@ namespace HekaLabel
                     return;
                 }
 
-                if (testVal > 100)//((testVal > 1 && cmbLabelType.SelectedIndex != 1) || (testVal > 2 && cmbLabelType.SelectedIndex == 1) || testVal < 0)
-                {
-                    MessageBox.Show("Maksimum 100 adet etiket yazdırılabilir.");
-                    return;
-                }
+                //if ((testVal > 1 && cmbLabelType.SelectedIndex != 1) || (testVal > 2 && cmbLabelType.SelectedIndex == 1) || testVal < 0)
+                //{
+                //    MessageBox.Show("Maksimum 100 adet etiket yazdırılabilir.");
+                //    return;
+                //}
 
                 using (LabelContext db = new LabelContext())
                 {
