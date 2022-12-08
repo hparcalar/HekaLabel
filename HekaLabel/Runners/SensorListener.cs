@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace HekaLabel.Runners
 {
     public class SensorListener
     {
+        private const string defaultFileContent = @"
+[VBAI INI Variables]
+ETIKET=0<<END>>";
         public string TriggerPath { get; set; }
 
         public delegate void PrintOrderArrived();
@@ -57,14 +61,14 @@ namespace HekaLabel.Runners
                     if (!string.IsNullOrEmpty(this.TriggerPath) && File.Exists(this.TriggerPath))
                     {
                         StreamReader rdr = new StreamReader(this.TriggerPath);
-                        string val = rdr.ReadLine().ToString();
+                        string val = rdr.ReadToEnd();
                         rdr.Close();
                         rdr.Dispose();
 
-                        if (val.StartsWith("1"))
+                        if (Regex.IsMatch(val, "ETIKET=1"))
                         {
                             StreamWriter wr = new StreamWriter(this.TriggerPath);
-                            wr.WriteLine("0");
+                            wr.Write(defaultFileContent.Replace("\t", ""));
                             wr.Flush();
                             wr.Close();
                             wr.Dispose();
