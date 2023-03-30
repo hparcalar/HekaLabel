@@ -14,6 +14,9 @@ namespace HekaLabel.Design
         public string SerialNo { get; set; }
         public string TestDevice { get; set; }
         public string ProductionDate { get; set; }
+        public string PlantCountryCode { get; set; }
+        public string FirmCode { get; set; }
+        public string ProductionTime { get; set; }
 
         public string Barcode2 { get; set; }
         public string SerialNo2 { get; set; }

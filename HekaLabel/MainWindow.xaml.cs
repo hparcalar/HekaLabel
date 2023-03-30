@@ -76,11 +76,12 @@ namespace HekaLabel
         {
             if (_editingCategory == null)
             {
-                txtCategoryFirmNo.Text = "";
+                txtCategoryFirmNo.Text = "019797";
                 txtModelNo.Text = "";
-                txtCategoryDeviceNo.Text = "MT";
-                txtCategoryRevisionNo.Text = "";
+                txtCategoryDeviceNo.Text = "00000";
+                txtCategoryRevisionNo.Text = "AF";
                 txtCategorySpecialCode.Text = "";
+                txtPlantCountryCode.Text = "090";
             }
             else
             {
@@ -89,6 +90,7 @@ namespace HekaLabel
                 txtCategoryDeviceNo.Text = _editingCategory.DeviceNo;
                 txtCategoryRevisionNo.Text = _editingCategory.RevisionNo;
                 txtCategorySpecialCode.Text = _editingCategory.SpecialCode;
+                txtPlantCountryCode.Text = _editingCategory.ShiftCode; // mevcut shift code alanı, ülke/işletme/hat kodu için kullanıldı
             }
         }
 
@@ -102,14 +104,14 @@ namespace HekaLabel
             string errMsg = "";
             if (string.IsNullOrEmpty(txtModelNo.Text) || txtModelNo.Text.Length != 10)
                 errMsg = "Model no 10 haneli olarak girilmelidir.";
-            else if (string.IsNullOrEmpty(txtCategoryDeviceNo.Text) || txtCategoryDeviceNo.Text.Length != 2)
-                errMsg = "Cihaz no 2 haneli olarak girilmelidir.";
+            //else if (string.IsNullOrEmpty(txtCategoryDeviceNo.Text) || txtCategoryDeviceNo.Text.Length != 2)
+            //    errMsg = "Cihaz no 2 haneli olarak girilmelidir.";
             else if (string.IsNullOrEmpty(txtCategoryRevisionNo.Text) || txtCategoryRevisionNo.Text.Length != 2)
                 errMsg = "Revizyon no 2 haneli olarak girilmelidir.";
-            else if (string.IsNullOrEmpty(txtCategoryFirmNo.Text) || txtCategoryFirmNo.Text.Length != 2)
-                errMsg = "Firma no 2 haneli olarak girilmelidir.";
-            else if (txtCategorySpecialCode.Text.Length > 0 && txtCategorySpecialCode.Text.Length < 10)
-                errMsg = "Özel alan 10 haneli olarak girilmelidir.";
+            //else if (string.IsNullOrEmpty(txtCategoryFirmNo.Text) || txtCategoryFirmNo.Text.Length != 6)
+            //    errMsg = "Firma no 6 haneli olarak girilmelidir.";
+            //else if (txtCategorySpecialCode.Text.Length > 0 && txtCategorySpecialCode.Text.Length < 15)
+            //    errMsg = "Özel alan 15 haneli olarak girilmelidir.";
 
             if (!string.IsNullOrEmpty(errMsg))
             {
@@ -160,6 +162,7 @@ namespace HekaLabel
                     _editingCategory.DeviceNo = txtCategoryDeviceNo.Text;
                     _editingCategory.FirmNo = txtCategoryFirmNo.Text;
                     _editingCategory.SpecialCode = txtCategorySpecialCode.Text;
+                    _editingCategory.ShiftCode = txtPlantCountryCode.Text;
 
                     db.SaveChanges();
                 }
@@ -237,6 +240,7 @@ namespace HekaLabel
                     txtPrintTestDevice.Text = printingCategory.DeviceNo;
                     cmbPrinters.Text = printingCategory.LastPrinterName;
                     txtPrintingSpecialCode.Text = printingCategory.SpecialCode;
+                    txtPrintPlantCountryCode.Text = printingCategory.ShiftCode;
                 }
             }
         }
@@ -276,11 +280,11 @@ namespace HekaLabel
                     return;
                 }
 
-                if (txtPrintingSpecialCode.Text.Length > 0 && txtPrintingSpecialCode.Text.Length < 10)
-                {
-                    MessageBox.Show("Özel alan 10 haneli olarak girilmelidir.", "Uyarı");
-                    return;
-                }
+                //if (txtPrintingSpecialCode.Text.Length > 0 && txtPrintingSpecialCode.Text.Length < 10)
+                //{
+                //    MessageBox.Show("Özel alan 10 haneli olarak girilmelidir.", "Uyarı");
+                //    return;
+                //}
 
                 //if ((testVal > 1 && cmbLabelType.SelectedIndex != 1) || (testVal > 2 && cmbLabelType.SelectedIndex == 1) || testVal < 0)
                 //{
@@ -337,6 +341,9 @@ namespace HekaLabel
                             serialCount = serialCount / 2;
                         }
 
+                        // prepare special code format
+                        string specialCode = "MK" + string.Format("{0:yyyy}", DateTime.Now) + txtPrintingSpecialCode.Text;
+
                         for (int i = 0; i < serialCount; i++)
                         {
                             if (cmbLabelType.SelectedIndex == 1)
@@ -347,22 +354,27 @@ namespace HekaLabel
                                         ModelNo = printingCategory.ModelNo,
                                         ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
                                         Revision = txtPrintRevision.Text,
-                                        SerialNo = string.Format("{0:0000}", currentSerialNo),
+                                        FirmCode = printingCategory.FirmNo,
+                                        ProductionTime =  string.Format("{0:HHmm}", DateTime.Now),
+                                        SerialNo = string.Format("{0:00000}", currentSerialNo),
                                         TestDevice = printingCategory.DeviceNo,
                                         Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + printingCategory.ShiftCode
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
-                                                string.Format("{0:0000}", currentSerialNo)
+                                                string.Format("{0:00000}", currentSerialNo)
                                               ) + printingCategory.DeviceNo
-                                            + txtPrintingSpecialCode.Text,
-                                        SerialNo2 = string.Format("{0:0000}", currentSerialNo + 1),
+                                            + specialCode,
+                                        SerialNo2 = string.Format("{0:00000}", currentSerialNo + 1),
+                                        PlantCountryCode = printingCategory.ShiftCode,
                                         ProductionDate2 = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
                                         Barcode2 = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + printingCategory.ShiftCode 
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
-                                                string.Format("{0:0000}", currentSerialNo + 1)
+                                                string.Format("{0:00000}", currentSerialNo + 1)
                                               ) + printingCategory.DeviceNo
-                                            + txtPrintingSpecialCode.Text,
+                                            + specialCode,
                                     },
                                 }, cmbPrinters.Text);
 
@@ -389,14 +401,18 @@ namespace HekaLabel
                                         ModelNo = printingCategory.ModelNo,
                                         ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
                                         Revision = txtPrintRevision.Text,
-                                        SerialNo = string.Format("{0:0000}", currentSerialNo),
+                                        SerialNo = string.Format("{0:00000}", currentSerialNo),
+                                        FirmCode = printingCategory.FirmNo,
+                                        ProductionTime =  string.Format("{0:HHmm}", DateTime.Now),
+                                        PlantCountryCode = printingCategory.ShiftCode,
                                         TestDevice = printingCategory.DeviceNo,
                                         Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + printingCategory.ShiftCode
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
-                                                string.Format("{0:0000}", currentSerialNo)
+                                                string.Format("{0:00000}", currentSerialNo)
                                               ) + printingCategory.DeviceNo
-                                            + txtPrintingSpecialCode.Text
+                                            + specialCode
                                     },
                                 }, cmbPrinters.Text);
 
