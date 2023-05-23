@@ -111,8 +111,8 @@
                         </LinearGradientBrush>
                     </Button.Background>
                 </Button>
-                <Label Content="Özel Alan" Margin="292,237,256,97.2" FontSize="9"/>
-                <TextBox x:Name="txtPrintingSpecialCode" TextWrapping="Wrap" Margin="292,267,255,69.2" FontSize="10"/>
+                <Label Content="Miktar" Margin="292,237,382.2,97" FontSize="9"/>
+                <TextBox x:Name="txtPrintingSpecialCode" TextWrapping="Wrap" Margin="292,267,382.2,69" FontSize="10"/>
                 <ComboBox HorizontalAlignment="Left" Name="cmbPrinters" Margin="552,306,0,0" VerticalAlignment="Top" Width="227" Height="43"/>
                 <Label Content="Yazıcı Seçimi" Margin="552,265,10,69.2" FontSize="9"/>
                 <ComboBox HorizontalAlignment="Left" x:Name="cmbLabelType" SelectedIndex="0" Margin="552,195,0,0" VerticalAlignment="Top" Width="227" Height="40">
@@ -123,6 +123,8 @@
                        " Margin="552,154,10,180.2" FontSize="9"/>
                 <Label Content="Ülke / İşletme / Hat Kodu" Margin="552,13,11,321.2" FontSize="9"/>
                 <TextBox x:Name="txtPrintPlantCountryCode" TextWrapping="Wrap" IsEnabled="False" Margin="552,38,9,298.2" FontSize="10"/>
+                <Label Content="Seri No" Margin="415,237,259.2,97" FontSize="9"/>
+                <TextBox x:Name="txtPrintingSerialNo" TextWrapping="Wrap" Margin="415,267,259.2,69" FontSize="10"/>
             </Grid>
         </TabItem>
     </TabControl>

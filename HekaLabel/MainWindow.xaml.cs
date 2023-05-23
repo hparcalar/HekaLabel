@@ -356,13 +356,13 @@ namespace HekaLabel
                                         Revision = txtPrintRevision.Text,
                                         FirmCode = printingCategory.FirmNo,
                                         ProductionTime =  string.Format("{0:HHmm}", DateTime.Now),
-                                        SerialNo = string.Format("{0:00000}", currentSerialNo),
+                                        SerialNo = txtPrintingSerialNo.Text,
                                         TestDevice = printingCategory.DeviceNo,
                                         Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
                                             + printingCategory.ShiftCode
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
-                                                string.Format("{0:00000}", currentSerialNo)
+                                                txtPrintingSerialNo.Text
                                               ) + printingCategory.DeviceNo
                                             + specialCode,
                                         SerialNo2 = string.Format("{0:00000}", currentSerialNo + 1),
@@ -372,7 +372,7 @@ namespace HekaLabel
                                             + printingCategory.ShiftCode 
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
-                                                string.Format("{0:00000}", currentSerialNo + 1)
+                                                txtPrintingSerialNo.Text
                                               ) + printingCategory.DeviceNo
                                             + specialCode,
                                     },
@@ -391,28 +391,33 @@ namespace HekaLabel
                                 db.PrintHistory.Add(newHistory);
                                 db.PrintHistory.Add(newHistory2);
 
-                                currentSerialNo += 2;
+                                //currentSerialNo += 2;
                             }
                             else
                             {
+                                string prBarcode = printingCategory.ModelNo.PadLeft(10, '0') + printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + printingCategory.ShiftCode
+                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
+                                            + (
+                                                txtPrintingSerialNo.Text
+                                              ) + printingCategory.DeviceNo
+                                            + specialCode;
+
+                                if (prBarcode.Length < 60)
+                                    prBarcode.PadRight(60, '0');
+
                                 rpr.Yazdir<LabelModel>(raporDosyaAdi, new List<LabelModel>() {
                                     new LabelModel
                                     {
                                         ModelNo = printingCategory.ModelNo,
                                         ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
                                         Revision = txtPrintRevision.Text,
-                                        SerialNo = string.Format("{0:00000}", currentSerialNo),
+                                        SerialNo = txtPrintingSerialNo.Text, // 5 haneli,
                                         FirmCode = printingCategory.FirmNo,
                                         ProductionTime =  string.Format("{0:HHmm}", DateTime.Now),
                                         PlantCountryCode = printingCategory.ShiftCode,
                                         TestDevice = printingCategory.DeviceNo,
-                                        Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
-                                            + printingCategory.ShiftCode
-                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
-                                            + (
-                                                string.Format("{0:00000}", currentSerialNo)
-                                              ) + printingCategory.DeviceNo
-                                            + specialCode
+                                        Barcode = prBarcode,
                                     },
                                 }, cmbPrinters.Text);
 
@@ -423,7 +428,7 @@ namespace HekaLabel
                                 };
                                 db.PrintHistory.Add(newHistory);
 
-                                currentSerialNo++;
+                                //currentSerialNo++;
                             }
                         }
 
