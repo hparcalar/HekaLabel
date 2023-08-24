@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using HekaLabel.Business.Context;
 using HekaLabel.Design;
 using System.IO;
+using Sharp7;
 
 namespace HekaLabel
 {
@@ -45,6 +46,7 @@ namespace HekaLabel
         }
 
         private Category _editingCategory;
+        private PlcTransfer _plcListener;
 
         private void BindCategoryList()
         {
@@ -245,6 +247,42 @@ namespace HekaLabel
         {
             BindCategoryList();
             BindPrinters();
+            StartPlcListener();
+        }
+
+        private void StartPlcListener()
+        {
+            if (_plcListener == null)
+            {
+                _plcListener = new PlcTransfer();
+                _plcListener.OnPrintL1 += _plcListener_OnPrintL1;
+                _plcListener.OnPrintL2 += _plcListener_OnPrintL2;
+            }
+                
+            _plcListener.Run();
+        }
+
+        private void _plcListener_OnPrintL2(string modelCode)
+        {
+            if (!string.IsNullOrEmpty(modelCode))
+            {
+                
+            }
+        }
+
+        private void _plcListener_OnPrintL1(string modelCode)
+        {
+            if (!string.IsNullOrEmpty(modelCode))
+            {
+
+            }
+
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                cmbPrinters.SelectedValue = "L1";
+            });
+
+            PrintLabel();
         }
 
         private void btnDesign_Click(object sender, RoutedEventArgs e)
@@ -415,7 +453,144 @@ namespace HekaLabel
                         db.SaveChanges();
                     }
                 }
+           
             }
+        }
+
+        private void PrintLabel()
+        {
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                using (LabelContext db = new LabelContext())
+                {
+                    int currentId = Convert.ToInt32(lstPrintCategory.SelectedValue);
+                    var printingCategory = db.Category.FirstOrDefault(d => d.Id == currentId);
+
+                    if (printingCategory != null)
+                    {
+                        int startSerialNo = printingCategory.SerialNo;
+                        int serialCount = 1;//Convert.ToInt32(txtPrintSerialCount.Text);
+
+                        string raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + printingCategory.Id.ToString() + ".repx";
+                        if (cmbLabelType.SelectedIndex == 1)
+                            raporDosyaAdi = System.AppDomain.CurrentDomain.BaseDirectory + "Design\\Label_" + printingCategory.Id.ToString() + "_2.repx";
+
+                        HekaReport rpr = new HekaReport();
+
+                        int currentSerialNo = 0;
+
+                        try
+                        {
+                            var dtStartStr = string.Format("{0:yyyy-MM-dd}", DateTime.Now) + " 00:00:00";
+                            var dtEndStr = string.Format("{0:yyyy-MM-dd}", DateTime.Now) + " 23:59:59";
+
+                            var dtStart = DateTime.ParseExact(dtStartStr, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.GetCultureInfo("tr"));
+                            var dtEnd = DateTime.ParseExact(dtEndStr, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.GetCultureInfo("tr"));
+
+                            var historyCount = db.PrintHistory.Where(d => d.CategoryId == printingCategory.Id
+                                && d.PrintDate >= dtStart && d.PrintDate <= dtEnd).Count();
+                            currentSerialNo = historyCount;
+
+                            currentSerialNo++;
+
+                            if (currentSerialNo == 0)
+                                currentSerialNo++;
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+
+                        if (currentSerialNo == 0)
+                            currentSerialNo++;
+
+                        // tek satırda çift etiket çıkan tasarımda toplam sayıyı 2 ye böl
+                        if (cmbLabelType.SelectedIndex == 1)
+                        {
+                            serialCount = serialCount / 2;
+                        }
+
+                        for (int i = 0; i < serialCount; i++)
+                        {
+                            if (cmbLabelType.SelectedIndex == 1)
+                            {
+                                rpr.Yazdir<LabelModel>(raporDosyaAdi, new List<LabelModel>() {
+                                    new LabelModel
+                                    {
+                                        ModelNo = printingCategory.ModelNo,
+                                        ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
+                                        Revision = txtPrintRevision.Text,
+                                        SerialNo = string.Format("{0:0000}", currentSerialNo),
+                                        TestDevice = printingCategory.DeviceNo,
+                                        Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
+                                            + (
+                                                string.Format("{0:0000}", currentSerialNo)
+                                              ) + printingCategory.DeviceNo
+                                            + txtPrintingSpecialCode.Text,
+                                        SerialNo2 = string.Format("{0:0000}", currentSerialNo + 1),
+                                        ProductionDate2 = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
+                                        Barcode2 = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
+                                            + (
+                                                string.Format("{0:0000}", currentSerialNo + 1)
+                                              ) + printingCategory.DeviceNo
+                                            + txtPrintingSpecialCode.Text,
+                                    },
+                                }, cmbPrinters.Text);
+
+                                var newHistory = new Business.Context.PrintHistory
+                                {
+                                    CategoryId = printingCategory.Id,
+                                    PrintDate = DateTime.Now,
+                                };
+                                var newHistory2 = new Business.Context.PrintHistory
+                                {
+                                    CategoryId = printingCategory.Id,
+                                    PrintDate = DateTime.Now,
+                                };
+                                db.PrintHistory.Add(newHistory);
+                                db.PrintHistory.Add(newHistory2);
+
+                                currentSerialNo += 2;
+                            }
+                            else
+                            {
+                                rpr.Yazdir<LabelModel>(raporDosyaAdi, new List<LabelModel>() {
+                                    new LabelModel
+                                    {
+                                        ModelNo = printingCategory.ModelNo,
+                                        ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
+                                        Revision = txtPrintRevision.Text,
+                                        SerialNo = string.Format("{0:0000}", currentSerialNo),
+                                        TestDevice = printingCategory.DeviceNo,
+                                        Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
+                                            + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
+                                            + (
+                                                string.Format("{0:0000}", currentSerialNo)
+                                              ) + printingCategory.DeviceNo
+                                            + txtPrintingSpecialCode.Text
+                                    },
+                                }, cmbPrinters.Text);
+
+                                var newHistory = new Business.Context.PrintHistory
+                                {
+                                    CategoryId = printingCategory.Id,
+                                    PrintDate = DateTime.Now,
+                                };
+                                db.PrintHistory.Add(newHistory);
+
+                                currentSerialNo++;
+                            }
+                        }
+
+                        printingCategory.LastPrinterName = cmbPrinters.Text;
+                        db.SaveChanges();
+                    }
+                }
+
+            });
+           
         }
 
         private void txtPrintFirmNo_TextChanged(object sender, TextChangedEventArgs e)
