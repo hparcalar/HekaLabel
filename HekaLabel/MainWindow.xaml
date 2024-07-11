@@ -94,7 +94,10 @@
                 <Label Content="Revizyon" Margin="292,66,256,268.2" FontSize="9"/>
                 <TextBox x:Name="txtPrintRevision" TextWrapping="Wrap" IsEnabled="False" Margin="290,96,257,240.2" FontSize="10"/>
                 <Label Content="Test Cihazı" Margin="292,124,256,210.2" FontSize="9"/>
-                <TextBox x:Name="txtPrintTestDevice" TextWrapping="Wrap" IsEnabled="False" Margin="292,154,255,182.2" FontSize="10"/>
+                <ComboBox x:Name="txtPrintTestDevice" Margin="292,154,255,182.2" FontSize="10">
+                    <ComboBoxItem IsSelected="True">MN1</ComboBoxItem>
+                    <ComboBoxItem>MN2</ComboBoxItem>
+                </ComboBox>
 
                 <Label Content="Seri Adedi" Margin="292,182,382,152.2" FontSize="9"/>
                 <TextBox x:Name="txtPrintSerialCount" TextWrapping="Wrap" Margin="291,212,382,124.2" FontSize="10"/>

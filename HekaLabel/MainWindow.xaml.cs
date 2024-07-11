@@ -78,7 +78,7 @@ namespace HekaLabel
             {
                 txtCategoryFirmNo.Text = "";
                 txtModelNo.Text = "";
-                txtCategoryDeviceNo.Text = "MT";
+                //txtCategoryDeviceNo.Text = "MT";
                 txtCategoryRevisionNo.Text = "";
                 txtCategorySpecialCode.Text = "";
             }
@@ -102,8 +102,8 @@ namespace HekaLabel
             string errMsg = "";
             if (string.IsNullOrEmpty(txtModelNo.Text) || txtModelNo.Text.Length != 10)
                 errMsg = "Model no 10 haneli olarak girilmelidir.";
-            else if (string.IsNullOrEmpty(txtCategoryDeviceNo.Text) || txtCategoryDeviceNo.Text.Length != 2)
-                errMsg = "Cihaz no 2 haneli olarak girilmelidir.";
+            else if (string.IsNullOrEmpty(txtCategoryDeviceNo.Text) || txtCategoryDeviceNo.Text.Length > 3)
+                errMsg = "Cihaz no 3 haneli olarak girilmelidir.";
             else if (string.IsNullOrEmpty(txtCategoryRevisionNo.Text) || txtCategoryRevisionNo.Text.Length != 2)
                 errMsg = "Revizyon no 2 haneli olarak girilmelidir.";
             else if (string.IsNullOrEmpty(txtCategoryFirmNo.Text) || txtCategoryFirmNo.Text.Length != 2)
@@ -234,7 +234,7 @@ namespace HekaLabel
                     txtPrintModelNo.Text = printingCategory.ModelNo;
                     txtPrintFirmNo.Text = printingCategory.FirmNo;
                     txtPrintRevision.Text = printingCategory.RevisionNo;
-                    txtPrintTestDevice.Text = printingCategory.DeviceNo;
+                    //txtPrintTestDevice.Text = printingCategory.DeviceNo;
                     cmbPrinters.Text = printingCategory.LastPrinterName;
                     txtPrintingSpecialCode.Text = printingCategory.SpecialCode;
                 }
@@ -348,12 +348,12 @@ namespace HekaLabel
                                         ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
                                         Revision = txtPrintRevision.Text,
                                         SerialNo = string.Format("{0:0000}", currentSerialNo),
-                                        TestDevice = printingCategory.DeviceNo,
+                                        TestDevice = txtPrintTestDevice.Text,
                                         Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
                                                 string.Format("{0:0000}", currentSerialNo)
-                                              ) + printingCategory.DeviceNo
+                                              ) + txtPrintTestDevice.Text
                                             + txtPrintingSpecialCode.Text,
                                         SerialNo2 = string.Format("{0:0000}", currentSerialNo + 1),
                                         ProductionDate2 = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
@@ -361,7 +361,7 @@ namespace HekaLabel
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
                                                 string.Format("{0:0000}", currentSerialNo + 1)
-                                              ) + printingCategory.DeviceNo
+                                              ) + txtPrintTestDevice.Text
                                             + txtPrintingSpecialCode.Text,
                                     },
                                 }, cmbPrinters.Text);
@@ -390,12 +390,12 @@ namespace HekaLabel
                                         ProductionDate = string.Format("{0:ddMMyy HHmm}", DateTime.Now),
                                         Revision = txtPrintRevision.Text,
                                         SerialNo = string.Format("{0:0000}", currentSerialNo),
-                                        TestDevice = printingCategory.DeviceNo,
+                                        TestDevice = txtPrintTestDevice.Text,
                                         Barcode = printingCategory.ModelNo.PadLeft(10, '0') +printingCategory.RevisionNo + printingCategory.FirmNo
                                             + string.Format("{0:ddMMyy}", DateTime.Now) + string.Format("{0:HHmm}", DateTime.Now)
                                             + (
                                                 string.Format("{0:0000}", currentSerialNo)
-                                              ) + printingCategory.DeviceNo
+                                              ) + txtPrintTestDevice.Text
                                             + txtPrintingSpecialCode.Text
                                     },
                                 }, cmbPrinters.Text);
